@@ -67,7 +67,7 @@ def get_model(train_data_loader=None, n_epochs=10):
   return model
 
 def get_model_advanced(train_data_loader=None, n_epochs=10,lr=1e-4,config=None):
-  model = None
+  model = cs21m009NN
 
   # write your code here as per instructions
   # ... your code ...
@@ -88,7 +88,7 @@ def get_model_advanced(train_data_loader=None, n_epochs=10,lr=1e-4,config=None):
   return model
   
   
-  print ('Returning model... (rollnumber: xx)')
+  print ('Returning model... (rollnumber: cs21m009)')
   
   return model
 
@@ -115,12 +115,14 @@ def test_model(model1=None, test_data_loader=None):
   
   print(f'Accuracy of the network : {100 * correct // total} %')
 
+  accuracy_val = 100 * correct // total;
+
   correct_pred = {classname: 0 for classname in labels}
   total_pred = {classname: 0 for classname in labels}
 
   # again no gradients needed
   with torch.no_grad():
-    for data in test_data_loader:a
+    for data in test_data_loader:
       images, labels = data
       outputs = model1(images)
       _, predictions = torch.max(outputs, 1)
