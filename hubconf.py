@@ -43,23 +43,23 @@ def get_model(train_data_loader=None, n_epochs=10):
 
     running_loss = 0.0
     for i, data in enumerate(train_dat_loader, 0):
-        # get the inputs; data is a list of [inputs, labels]
-        inputs, labels = data
+      # get the inputs; data is a list of [inputs, labels]
+      inputs, labels = data
 
-        # zero the parameter gradients
-        optimizer.zero_grad()
+      # zero the parameter gradients
+      optimizer.zero_grad()
 
-        # forward + backward + optimize
-        outputs = cs21m009NN(inputs)
-        loss = criterion(outputs, labels)
-        loss.backward()
-        optimizer.step()
+      # forward + backward + optimize
+      outputs = cs21m009NN(inputs)
+      loss = criterion(outputs, labels)
+      loss.backward()
+      optimizer.step()
 
-        # print statistics
-        running_loss += loss.item()
-        if i % 2000 == 1999:    # print every 2000 mini-batches
-            print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
-            running_loss = 0.0
+      # print statistics
+      running_loss += loss.item()
+      if i % 2000 == 1999:    # print every 2000 mini-batches
+        print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
+        running_loss = 0.0
 
   print('Finished Training')
   print ('Returning model... (rollnumber: cs21m009)')
@@ -105,13 +105,13 @@ def test_model(model1=None, test_data_loader=None):
 
   with torch.no_grad():
     for data in test_data_loader:
-        images, labels = data
-        # calculate outputs by running images through the network
-        outputs = model1(images)
-        # the class with the highest energy is what we choose as prediction
-        _, predicted = torch.max(outputs.data, 1)
-        total += labels.size(0)
-        correct += (predicted == labels).sum().item()
+      images, labels = data
+      # calculate outputs by running images through the network
+      outputs = model1(images)
+      # the class with the highest energy is what we choose as prediction
+      _, predicted = torch.max(outputs.data, 1)
+      total += labels.size(0)
+      correct += (predicted == labels).sum().item()
   
   print(f'Accuracy of the network : {100 * correct // total} %')
 
@@ -120,21 +120,21 @@ def test_model(model1=None, test_data_loader=None):
 
   # again no gradients needed
   with torch.no_grad():
-      for data in test_data_loader:a
-          images, labels = data
-          outputs = model1(images)
-          _, predictions = torch.max(outputs, 1)
-          # collect the correct predictions for each class
-          for label, prediction in zip(labels, predictions):
-              if label == prediction:
-                  correct_pred[labels[label]] += 1
-              total_pred[labels[label]] += 1
+    for data in test_data_loader:a
+      images, labels = data
+      outputs = model1(images)
+      _, predictions = torch.max(outputs, 1)
+      # collect the correct predictions for each class
+      for label, prediction in zip(labels, predictions):
+          if label == prediction:
+              correct_pred[labels[label]] += 1
+          total_pred[labels[label]] += 1
 
 
   # print accuracy for each class
   for classname, correct_count in correct_pred.items():
-      accuracy = 100 * float(correct_count) / total_pred[classname]
-      print(f'Accuracy for class: {classname:5s} is {accuracy:.1f} %')
+    accuracy = 100 * float(correct_count) / total_pred[classname]
+    print(f'Accuracy for class: {classname:5s} is {accuracy:.1f} %')
 
   print ('Returning metrics... (rollnumber: cs21m0009)')
   
