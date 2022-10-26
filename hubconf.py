@@ -7,23 +7,24 @@ def kali():
   print ('kali')
   
 # Define a neural network YOUR ROLL NUMBER (all small letters) should prefix the classname
-class cs21m009NN(nn.Module):
-    def __init__(self):
-      super(cs21m009NN, self).__init__()
-      self.conv1 = nn.Conv2d(1, 6, 5)
-      self.conv2 = nn.Conv2d(6, 16, 5)
-      self.fc1 = nn.Linear(16 * 5 * 5, 120)
-      self.fc2 = nn.Linear(120, 84)
-      self.fc3 = nn.Linear(84, 10)
-
+class cs21m009nn(nn.Module):
+    def __init__(self,num_classes=2):
+        super(cs21m009nn, self).__init__()
+        self.layer1 = nn.Sequential(
+            nn.Conv2d(1, 16, kernel_size=5, padding=2),
+            nn.RelU()
+            nn.MaxPool2d(2))
+        self.layer2 = nn.Sequential(
+            nn.Conv2d(16, 32, kernel_size=5, padding=2),
+            nn.ReLU(),
+            nn.MaxPool2d(2))
+        self.fc = nn.Linear(7*7*32, 10)
+        
     def forward(self, x):
-      x = F.max_pool2d(F.relu(self.conv1(x)), (2, 2))
-      x = F.max_pool2d(F.relu(self.conv2(x)), 2)
-      x = torch.flatten(x, 1)
-      x = F.relu(self.fc1(x))
-      x = F.relu(self.fc2(x))
-      x = self.fc3(x)
-      return x
+        out = self.layer1(x)
+        out = self.layer2(out)
+        out = self.fc(out)
+        return out
 
 def get_model(train_data_loader=None, n_epochs=10):
   model = None
