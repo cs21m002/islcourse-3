@@ -536,3 +536,49 @@ print(loss_fun)
 result = torch.hub.load(myrepo,'test',testloader,my_model,loss_fun)
 
 print(result)
+
+====================================== conv2d output =================================
+
+import numpy as np
+
+def conv2d_output_size(input_size, out_channels, padding, kernel_size, stride, dilation=None):
+    """According to https://pytorch.org/docs/stable/generated/torch.nn.Conv2d.html
+    """
+    if dilation is None:
+        dilation = (1, ) * 2
+    if isinstance(padding, int):
+        padding = (padding, ) * 2
+    if isinstance(kernel_size, int):
+        kernel_size = (kernel_size, ) * 2
+    if isinstance(stride, int):
+        stride = (stride, ) * 2
+
+    output_size = (
+        out_channels,
+        np.floor((input_size[1] + 2 * padding[0] - dilation[0] * (kernel_size[0] - 1) - 1) /
+                 stride[0] + 1).astype(int),
+        np.floor((input_size[2] + 2 * padding[1] - dilation[1] * (kernel_size[1] - 1) - 1) /
+                 stride[1] + 1).astype(int)
+    )
+    return output_size
+
+
+c_i, c_o = 3, 16
+k, s, p = 3, 2, 1
+
+
+sample_2d_tensor = torch.ones((c_i, 64, 64))
+c2d = nn.Conv2d(in_channels=c_i, out_channels=c_o, kernel_size=k,
+                stride=s, padding=p)
+
+output_size = conv2d_output_size(
+    sample_2d_tensor.shape, out_channels=c_o, kernel_size=k, stride=s, padding=p)
+
+print("After conv2d")
+print("Dummy input size:", sample_2d_tensor.shape)
+print("Calculated output size:", output_size)
+print("Real output size:", c2d(sample_2d_tensor).detach().numpy().shape)
+
+val = 1
+for x in output_size:
+  val = val * x
