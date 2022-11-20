@@ -1,3 +1,144 @@
+============================ simple nn - single data point =======================
+
+!pip install torchmetrics
+
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+batch_size=64
+
+import torch
+from torch import nn
+from torch.utils.data import DataLoader
+from torchvision import datasets
+from torchvision.transforms import ToTensor
+import torch.nn.functional as F
+from torchmetrics import Precision, Recall, F1Score, Accuracy
+from torchmetrics.classification import accuracy
+
+# cross entropy 
+def loss_fn(y_pred,y_true):
+  e=0.0001
+  v=-torch.sum(y_true*torch.log(y_pred+e))
+  return v
+
+#loading data FashionMNIST
+train_data = datasets.FashionMNIST(
+                root="data",
+                train = True,
+                transform = ToTensor(),
+                download = True)
+
+test_data = datasets.FashionMNIST(
+                root="data",
+                train=False,
+                download=True,
+                transform = ToTensor())
+
+trainLoader = DataLoader(train_data,batch_size=64)
+testLoader = DataLoader(test_data,batch_size=64)
+
+for X, y in testLoader:
+    print(f"Shape of X [N, C, H, W]: {X.shape}")
+    print(f"Shape of y: {y.shape} {y.dtype}")
+    break
+
+#Defining Neural Network
+class mynet(nn.Module):
+    def __init__(self):
+        super(mynet,self).__init__()
+        self.net_stack = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(784,10),
+            nn.Softmax()
+        )
+    
+    def forward(self,x):
+        x = self.net_stack(x)
+        return x
+
+    
+
+def get_model():
+    model = mynet().to(device)
+    return model
+
+#training
+def _train(trainloader,my_model,loss_fun,optimizer):
+    size = len(trainloader)
+    my_model.train()
+    for batch , (X,y) in enumerate(trainloader):
+        X, y = X.to(device), y.to(device)
+        ypred = my_model(X)
+        y= F.one_hot(y,10)
+        #print(ypred.shape,y.shape)
+        loss = loss_fun(ypred,y)
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        if batch % 100 == 0:
+            loss, current = loss.item(), batch * len(X)
+    print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+
+def train(trainloader,my_model,epochs,learning_rate=1e-3):
+    loss_fun = loss_fn
+    optimizer = torch.optim.SGD(my_model.parameters(),lr=learning_rate,momentum=0.9)
+
+    for i in range(epochs):
+        print("running epoch ",i)
+        _train(trainloader,my_model,loss_fun,optimizer)
+    print("FINISHED TRAINING:")
+
+#testing
+
+def test(dataloader, model, loss_fn):
+    size = len(dataloader.dataset)
+    num_batches = len(dataloader)
+    model.eval()
+    test_loss, correct = 0, 0
+    with torch.no_grad():
+        for X, y in dataloader:
+            X, y = X.to(device), y.to(device)
+            tmp = torch.nn.functional.one_hot(y, num_classes= 10).to(device)
+            pred = model(X)
+            test_loss += loss_fn(pred, tmp).item()
+            correct += (pred.argmax(1) == y).type(torch.float).sum().item()
+    test_loss /= num_batches
+    correct /= size
+    print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+    #precision_recall_fscore_support(y_ground, y_pred, average='macro')
+    accuracy1 = Accuracy().to(device)
+    print('Accuracy :', accuracy1(pred,y))
+    precision = Precision(average = 'macro', num_classes = 10).to(device)
+    print('precision :', precision(pred,y))
+
+    recall = Recall(average = 'macro', num_classes = 10).to(device)
+    print('recall :', recall(pred,y))
+    f1_score = F1Score(average = 'macro', num_classes = 10).to(device)
+    print('f1_score :', f1_score(pred,y))
+    return accuracy1,precision, recall, f1_score
+
+my_model = get_model()
+print(my_model)
+print(my_model.parameters())
+
+#for single data point
+x , y = train_data[0]
+print(y)
+y = torch.Tensor([y])
+print(type(x),type(y))
+print(y)
+x , y = x.to(device) , y.to(device)
+ypred = my_model(x)
+print(loss_fn(ypred,torch.tensor(y)))
+
+#training on train set 
+train(trainLoader,my_model,10,1e-4)
+
+#testing on test set
+test(testLoader,my_model,loss_fn)
+
 ============================= simple nn ===============================
 !pip install torchmetrics
 
