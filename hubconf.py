@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 import torch.optim as optim
-from sklearn.datasets import make_blobs,make_circles
+from sklearn.datasets import make_blobs,make_circles,load_digits
 
 def get_data_blobs(n_points=100):
   X, y = make_blobs(n_samples=n_points, centers=3, n_features=2,random_state=0)
@@ -12,11 +12,8 @@ def get_data_circles(n_points=100):
   return X,y
 
 def get_data_mnist():
-  pass
-  # write your code here
-  # Refer to sklearn data sets
-  X,y = None
-  # write your code ...
+  X,y = load_digits(return_X_y=True)
+  #print(X.shape)
   return X,y
 
 def build_kmeans(X=None,k=10):
