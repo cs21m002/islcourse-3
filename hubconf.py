@@ -2,6 +2,8 @@ import torch
 from torch import nn
 import torch.optim as optim
 from sklearn.datasets import make_blobs,make_circles,load_digits
+from sklearn.cluster import KMeans
+import numpy as np
 
 def get_data_blobs(n_points=100):
   X, y = make_blobs(n_samples=n_points, centers=3, n_features=2,random_state=0)
@@ -17,19 +19,11 @@ def get_data_mnist():
   return X,y
 
 def build_kmeans(X=None,k=10):
-  pass
-  # k is a variable, calling function can give a different number
-  # Refer to sklearn KMeans method
-  km = None # this is the KMeans object
-  # write your code ...
-  return km
+  kmeans = KMeans(n_clusters=k, random_state=0).fit(X)
+  return kmeans
 
 def assign_kmeans(km=None,X=None):
-  pass
-  # For each of the points in X, assign one of the means
-  # refer to predict() function of the KMeans in sklearn
-  # write your code ...
-  ypred = None
+  ypred = km.predict(X)
   return ypred
 
 def compare_clusterings(ypred_1=None,ypred_2=None):
