@@ -4,6 +4,7 @@ import torch.optim as optim
 from sklearn.datasets import make_blobs,make_circles,load_digits
 from sklearn.cluster import KMeans
 import numpy as np
+from sklearn.metrics.cluster import homogeneity_score,completeness_score,v_measure_score
 
 def get_data_blobs(n_points=100):
   X, y = make_blobs(n_samples=n_points, centers=3, n_features=2,random_state=0)
@@ -27,7 +28,7 @@ def assign_kmeans(km=None,X=None):
   return ypred
 
 def compare_clusterings(ypred_1=None,ypred_2=None):
-  pass
-  # refer to sklearn documentation for homogeneity, completeness and vscore
-  h,c,v = 0,0,0 # you need to write your code to find proper values
+  h = homogeneity_score(ypred_1,ypred_2)
+  c =completeness_score(ypred_1,ypred_2)
+  v = v_measure_score(ypred_1,ypred_2)
   return h,c,v
